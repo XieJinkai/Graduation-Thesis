@@ -1,76 +1,51 @@
 % !TeX root = ../thuthesis-example.tex
+\chapter{系统测试与结果分析}
 
-\chapter{引用文献的标注}
+\section{测试环境与测试方法}
 
-模板支持 BibTeX 和 BibLaTeX 两种方式处理参考文献。
-下文主要介绍 BibTeX 配合 \pkg{natbib} 宏包的主要使用方法。
+\subsection{测试环境}
+系统在Windows环境下进行开发与测试，开发语言为C++，界面框架为Qt Widgets，构建工具采用Qt项目常用构建方式。测试对象主要包括番茄计时、正向计时、日记读写、记账增删改查、统计图表渲染以及主题切换等核心功能。
+由于本项目属于桌面端本地应用，因此测试重点更多聚焦于界面交互、数据正确性和模块协同，而不是传统Web系统中的网络吞吐指标。测试过程中，除了检查功能是否可用外，还特别关注页面切换是否顺畅、主题切换是否统一、表格和图表在夜间模式下是否清晰可读，以及右键菜单的操作链路是否完整。
 
+\subsection{测试方法}
+测试方法采用手工测试与自动化测试相结合的方式。手工测试主要用于检查页面布局、交互流程和视觉效果；自动化测试主要基于Qt提供的QTest框架，对记账模块的重要逻辑进行验证，包括账单编辑、删除确认、数据刷新和提示信息反馈等内容。
+其中，手工测试适合验证用户主观体验相关内容，例如界面是否美观、交互是否符合预期、图表颜色是否协调等；自动化测试则适合覆盖高频且容易反复执行的业务逻辑，尤其是记账模块中的编辑和删除操作。通过这两种方式结合，可以在提高测试效率的同时兼顾测试深度，从而提升系统整体可靠性。
 
-\section{顺序编码制}
+\section{功能测试与结果分析}
 
-在顺序编码制下，默认的 \cs{cite} 命令同 \cs{citep} 一样，序号置于方括号中，
-引文页码会放在括号外。
-统一处引用的连续序号会自动用短横线连接。
+\subsection{计时与日记功能测试}
+在计时模块测试中，系统能够正确完成开始、暂停、继续和提前结束等操作，计时结束后可将专注数据写入当日文件，并生成本日专注时长记录。日记模块能够根据日期正确加载与保存文本内容，文件组织结构清晰，未出现错写、漏写问题。测试结果表明，计时与日记功能之间的联动逻辑正确，满足日常使用需求。
+同时，结合多日期切换测试可发现，系统能够根据用户选择的日期正确读取对应文本文件，证明“按日期组织日记数据”的设计具有较好的稳定性。对图片插入和文本编辑功能的验证也表明，日记模块不再只是简单的记事窗口，而是能够满足较基础的多样化记录需求，这提高了系统作为个人信息管理工具的完整度。
 
-\thusetup{
-  cite-style = super,
-}
-\noindent
-\begin{tabular}{l@{\quad$\Rightarrow$\quad}l}
-  \verb|\cite{zhangkun1994}|               & \cite{zhangkun1994}               \\
-  \verb|\citet{zhangkun1994}|              & \citet{zhangkun1994}              \\
-  \verb|\citep{zhangkun1994}|              & \citep{zhangkun1994}              \\
-  \verb|\cite[42]{zhangkun1994}|           & \cite[42]{zhangkun1994}           \\
-  \verb|\cite{zhangkun1994,zhukezhen1973}| & \cite{zhangkun1994,zhukezhen1973} \\
+\subsection{记账与统计功能测试}
+在记账功能测试中，用户能够完成账单的新增、查看、编辑和删除操作，金额与类型信息在刷新后保持一致。通过自动化测试可验证，编辑操作能够正确回填原始数据并写回文件，删除操作在确认取消时不会误删记录。统计模块在不同时间范围下能够正确计算总额、均值、最大值和最小值，并及时刷新饼状图和柱状图内容，说明数据读取和图形展示链路是正确的。
+为了更贴近正式论文写法，可将核心测试结果概括如下表所示：
+
+\begin{table}[h]
+\centering
+\caption{核心功能测试结果表}
+\begin{tabular}{|l|l|l|l|}
+\hline
+测试模块 & 测试内容 & 预期结果 & 实际结果 \\
+\hline
+番茄计时 & 开始、暂停、继续、提前结束 & 状态切换正确，专注记录正常写入 & 通过 \\
+正向计时 & 计时结束并记录 & 能正确换算分钟并写入文件 & 通过 \\
+日记模块 & 按日期加载与保存 & 对应日期内容读写正确 & 通过 \\
+记账模块 & 新增账单 & 表格与文件数据同步更新 & 通过 \\
+记账模块 & 编辑账单 & 回填成功，修改后文件正确保存 & 通过 \\
+记账模块 & 删除账单 & 确认后删除，取消时不删除 & 通过 \\
+统计模块 & 图表切换与数据刷新 & 饼图、柱状图与统计值同步更新 & 通过 \\
+主题模块 & 日夜间主题切换 & 各主要控件样式统一变化 & 通过 \\
+\hline
 \end{tabular}
+\end{table}
 
+\section{系统性能与可用性分析}
 
-也可以取消上标格式，将数字序号作为文字的一部分。
-建议全文统一使用相同的格式。
+\subsection{响应性分析}
+从实际运行效果看，系统在普通个人电脑环境下启动速度较快，页面切换、按钮点击、图表切换和表格刷新都能够在较短时间内完成。由于采用本地文件读写和轻量级界面框架，系统在中小规模数据量下没有出现明显卡顿现象，能够满足桌面应用对交互响应性的基本要求。
+特别是在记账模块和统计模块中，由于账单数据规模通常不会过大，采用本地文件读写和内存汇总的方式能够在保证实现简单的同时维持较好的响应速度。图表切换过程中，界面主要执行已有数据的重绘和视图切换，而非进行复杂网络请求，因此用户感受到的延迟较低。这使得系统更符合个人桌面工具“即点即用”的使用预期。
 
-\thusetup{
-  cite-style = inline,
-}
-\noindent
-\begin{tabular}{l@{\quad$\Rightarrow$\quad}l}
-  \verb|\cite{zhangkun1994}|               & \cite{zhangkun1994}               \\
-  \verb|\citet{zhangkun1994}|              & \citet{zhangkun1994}              \\
-  \verb|\citep{zhangkun1994}|              & \citep{zhangkun1994}              \\
-  \verb|\cite[42]{zhangkun1994}|           & \cite[42]{zhangkun1994}           \\
-  \verb|\cite{zhangkun1994,zhukezhen1973}| & \cite{zhangkun1994,zhukezhen1973} \\
-\end{tabular}
-
-
-
-\section{著者-出版年制}
-
-著者-出版年制下的 \cs{cite} 跟 \cs{citet} 一样。
-
-\thusetup{
-  cite-style = author-year,
-}
-\noindent
-\begin{tabular}{@{}l@{$\Rightarrow$}l@{}}
-  \verb|\cite{zhangkun1994}|                & \cite{zhangkun1994}                \\
-  \verb|\citet{zhangkun1994}|               & \citet{zhangkun1994}               \\
-  \verb|\citep{zhangkun1994}|               & \citep{zhangkun1994}               \\
-  \verb|\cite[42]{zhangkun1994}|            & \cite[42]{zhangkun1994}            \\
-  \verb|\citep{zhangkun1994,zhukezhen1973}| & \citep{zhangkun1994,zhukezhen1973} \\
-\end{tabular}
-
-\vskip 2ex
-\thusetup{
-  cite-style = super,
-}
-注意，引文参考文献的每条都要在正文中标注
-\cite{zhangkun1994,zhukezhen1973,dupont1974bone,zhengkaiqing1987,%
-  jiangxizhou1980,jianduju1994,merkt1995rotational,mellinger1996laser,%
-  bixon1996dynamics,mahui1995,carlson1981two,taylor1983scanning,%
-  taylor1981study,shimizu1983laser,atkinson1982experimental,%
-  kusch1975perturbations,guangxi1993,huosini1989guwu,wangfuzhi1865songlun,%
-  zhaoyaodong1998xinshidai,biaozhunhua2002tushu,chubanzhuanye2004,%
-  who1970factors,peebles2001probability,baishunong1998zhiwu,%
-  weinstein1974pathogenic,hanjiren1985lun,dizhi1936dizhi,%
-  tushuguan1957tushuguanxue,aaas1883science,fugang2000fengsha,%
-  xiaoyu2001chubanye,oclc2000about,scitor2000project%
-}。
+\subsection{稳定性分析}
+在连续使用和重复测试过程中，系统未出现明显的崩溃、界面失效和数据异常情况。记账页面中右键菜单、编辑状态切换和删除确认流程能够稳定执行，说明系统在核心业务路径上的稳定性较好。当然，由于当前项目仍采用本地文件存储方案，在大规模数据、高并发访问和跨设备同步等场景下仍存在一定局限，这也是后续优化的重要方向。
+总体而言，当前系统已经能够稳定支撑个人单机环境下的日常使用需求。特别是在本次针对记账模块进行完善后，编辑、删除、主题适配和统计展示之间的联动更加稳定，说明系统从初始功能实现逐步发展到了较为完整的应用原型阶段。对于毕业设计项目而言，这种从需求提出到问题修复再到整体优化的过程，也正是论文写作中体现工程实践能力的重要部分。

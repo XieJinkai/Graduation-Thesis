@@ -1,60 +1,32 @@
 % !TeX root = ../thuthesis-example.tex
+\chapter{附录}
 
-\chapter{补充内容}
+\section*{附录A 记账模块核心数据结构}
 
-附录是与论文内容密切相关、但编入正文又影响整篇论文编排的条理和逻辑性的资料，例如某些重要的数据表格、计算程序、统计表等，是论文主体的补充内容，可根据需要设置。
+\begin{verbatim}
+struct AccountingRecord {
+    QDateTime time{};
+    QString item{};
+    double amount{0.0};
+    QString type{};
+};
+\end{verbatim}
 
-附录中的图、表、数学表达式、参考文献等另行编序号，与正文分开，一律用阿拉伯数字编码，
-但在数码前冠以附录的序号，例如“图~\ref{fig:appendix-figure}”，
-“表~\ref{tab:appendix-table}”，“式\eqref{eq:appendix-equation}”等。
+\section*{附录B 系统主要模块说明}
+\begin{enumerate}
+\item 番茄计时模块：负责专注倒计时、轮次切换、暂停继续与记录写入。
+\item 正向计时模块：负责普通专注事件计时与分钟统计。
+\item 日记模块：负责按日期保存和读取文本内容。
+\item 记账模块：负责账单录入、表格展示、右键编辑与删除。
+\item 统计模块：负责专注数据与消费数据的汇总和图表展示。
+\item 主题管理模块：负责日间主题、夜间主题样式加载与保存。
+\item 登录会话模块：负责用户状态维护和页面访问前提控制。
+\end{enumerate}
 
-
-\section{插图}
-
-% 附录中的插图示例（图~\ref{fig:appendix-figure}）。
-
-\begin{figure}
-  \centering
-  \includegraphics[width=0.6\linewidth]{example-image-a.pdf}
-  \caption{附录中的图片示例}
-  \label{fig:appendix-figure}
-\end{figure}
-
-
-\section{表格}
-
-% 附录中的表格示例（表~\ref{tab:appendix-table}）。
-
-\begin{table}
-  \centering
-  \caption{附录中的表格示例}
-  \begin{tabular}{ll}
-    \toprule
-    文件名          & 描述                         \\
-    \midrule
-    thuthesis.dtx   & 模板的源文件，包括文档和注释 \\
-    thuthesis.cls   & 模板文件                     \\
-    thuthesis-*.bst & BibTeX 参考文献表样式文件    \\
-    thuthesis-*.bbx & BibLaTeX 参考文献表样式文件  \\
-    thuthesis-*.cbx & BibLaTeX 引用样式文件        \\
-    \bottomrule
-  \end{tabular}
-  \label{tab:appendix-table}
-\end{table}
-
-
-\section{数学表达式}
-
-% 附录中的数学表达式示例（式\eqref{eq:appendix-equation}）。
-\begin{equation}
-  \frac{1}{2 \uppi \symup{i}} \int_\gamma f = \sum_{k=1}^m n(\gamma; a_k) \mathscr{R}(f; a_k)
-  \label{eq:appendix-equation}
-\end{equation}
-
-
-\section{文献引用}
-
-附录\cite{dupont1974bone}中的参考文献引用\cite{zhengkaiqing1987}示例
-\cite{dupont1974bone,zhengkaiqing1987}。
-
-\printbibliography
+\section*{附录C 建议插图位置}
+\begin{enumerate}
+\item 系统登录界面与主窗口界面图。
+\item 番茄计时页面运行效果图。
+\item 记账页面新增、编辑和删除操作效果图。
+\item 统计页面饼状图、柱状图及夜间主题效果图。
+\end{enumerate}

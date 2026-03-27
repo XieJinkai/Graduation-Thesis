@@ -1,148 +1,45 @@
 % !TeX root = ../thuthesis-example.tex
+\chapter{系统需求分析与方案论证}
 
-\chapter{图表示例}
+\section{系统需求分析}
 
-\section{插图}
+\subsection{功能需求分析}
+结合项目当前实现，系统主要包含以下功能需求：
+\begin{enumerate}
+    \item 用户登录后能够进入统一主界面，并在多个功能页之间切换；
+    \item 番茄计时模块支持任务名称输入、专注时长设置、休息时长设置、开始、暂停、继续和提前结束；
+    \item 正向计时模块能够记录普通专注事件，并将统计结果写入本地数据文件；
+    \item 日记模块能够按日期保存与读取文本内容，支持用户长期积累个人记录；
+    \item 记账模块支持消费事项、金额和类型的录入，支持账单列表查看、编辑和删除；
+    \item 统计模块能够对周、月等时间范围内的专注数据和消费数据进行汇总，展示图表和关键统计量；
+    \item 系统应支持日间主题和夜间主题切换，以改善不同环境下的视觉体验。
+\end{enumerate}
+为了使系统具备更好的使用连续性，各模块之间还需要满足基本的数据联动要求。例如，番茄计时和正向计时产生的专注事件应自动进入本地记录文件，供日记模块展示和统计模块计算；记账模块录入的数据应当能够被统计模块实时读取并重新绘制图表；主题切换操作应对各页面和控件保持统一生效，避免界面风格割裂。由此可见，本系统的功能需求并非简单的模块堆叠，而是强调功能之间的协同工作能力。
 
-图片通常在 \env{figure} 环境中使用 \cs{includegraphics} 插入，如图~\ref{fig:example} 的源代码。
-建议矢量图片使用 PDF 格式，比如数据可视化的绘图；
-照片应使用 JPG 格式；
-其他的栅格图应使用无损的 PNG 格式。
-注意，LaTeX 不支持 TIFF 格式；EPS 格式已经过时。
+\subsection{非功能需求分析}
+在非功能层面，系统需要满足以下要求：首先，界面交互应清晰直观，便于普通用户快速上手；其次，系统运行应保持较好的响应性，避免在计时刷新、文件读写和图表绘制过程中出现明显卡顿；再次，数据存储应以本地化为主，降低部署与使用门槛；最后，系统结构应具备较好的模块化特征，便于后续扩展同步功能、数据库功能和更多工具模块。
+除此之外，系统还需要满足一定的可维护性和可扩展性要求。由于毕业设计项目往往会在后续继续迭代，因此代码结构应尽量清晰，页面类、服务类和数据结构之间的职责划分应当明确。以当前项目为例，用户会话由独立的Session对象维护，数据读写由DataStore、DiaryStore和AccountingStore等服务类封装，统计逻辑则由StatsService和AccountingStatsService单独负责，这种分工方式有利于减少业务耦合度，并为后续引入数据库、云同步或更复杂的分析模型提供基础。
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.5\linewidth]{example-image-a.pdf}
-  \caption{示例图片标题}
-  \label{fig:example}
-\end{figure}
+\section{关键技术与方案比较}
 
-若图或表中有附注，采用英文小写字母顺序编号，附注写在图或表的下方。
-国外的期刊习惯将图表的标题和说明文字写成一段，需要改写为标题只含图表的名称，其他说明文字以注释方式写在图表下方，或者写在正文中。
+\subsection{GUI框架选型}
+在桌面图形界面技术的选择上，本文对Qt、Electron和WPF进行了比较。Electron开发效率较高，但资源占用相对较大；WPF在Windows平台具有较好的开发体验，但跨平台能力有限；Qt则兼顾了性能、跨平台能力和组件丰富度，特别适合毕业设计类桌面系统开发。因此，本文最终选择Qt Widgets作为界面开发框架。
+具体而言，Qt Widgets 提供了QMainWindow、QTabWidget、QTableWidget、QMenu、QToolBar、QCalendarWidget等大量成熟控件，能够快速搭建功能型桌面应用界面。更重要的是，Qt拥有稳定的信号与槽机制，便于描述页面内外的交互关系。例如，登录页面可通过发出登录成功信号进入主窗口，记账页面可通过动作信号响应编辑和删除操作，统计页面可通过按钮与图表点击事件完成图形切换与详情展示。这些特性使Qt在本项目中具备较高的开发效率与实现灵活性。
 
-如果一个图由两个或两个以上分图组成时，各分图分别以 (a)、(b)、(c)...... 作为图序，并须有分图题。
-推荐使用 \pkg{subcaption} 宏包来处理， 比如图~\ref{fig:subfig-a} 和图~\ref{fig:subfig-b}。
+\subsection{数据存储方案比较}
+在数据存储方案方面，可选方案主要包括关系数据库、本地文本文件和JSON文件。考虑到本系统定位为轻量级个人桌面工具，数据规模有限、部署环境简单，若直接引入数据库会增加配置与维护成本。因此，系统最终采用混合本地文件存储策略：专注记录与日记内容使用文本文件保存，便于按日期管理；记账数据则采用JSON对象逐行存储，既保留结构化特征，又降低解析复杂度。
+该方案还有一个显著优点，即可视化和调试过程更加直接。开发者可以直接打开对应用户目录下的文件查看原始数据，有利于快速定位问题和验证功能效果。对于毕业设计项目而言，这种方式比完整引入数据库系统更适合当前规模，也更符合“轻量、直观、可演示”的实现目标。当然，这种方案的局限性也较为明显，例如复杂查询能力有限、缺少事务和并发控制，因此在后续展望部分，本文也提出了引入SQLite等数据库的改进方向。
 
-\begin{figure}
-  \centering
-  \subcaptionbox{分图 A\label{fig:subfig-a}}
-    {\includegraphics[width=0.35\linewidth]{example-image-a.pdf}}
-  \subcaptionbox{分图 B\label{fig:subfig-b}}
-    {\includegraphics[width=0.35\linewidth]{example-image-b.pdf}}
-  \caption{多个分图的示例}
-  \label{fig:multi-image}
-\end{figure}
+\subsection{图表实现方案比较}
+图表功能可通过引入第三方图表库实现，也可基于Qt绘图机制自行开发。第三方库开发速度较快，但会增加项目依赖；自定义绘制虽然实现复杂度较高，但更容易控制样式、交互和主题适配。结合本项目规模和教学实践要求，系统最终采用自定义饼状图和柱状图组件实现数据可视化，以增强对绘制流程和事件交互的掌握。
+从系统效果来看，自定义图表组件不仅能够绘制静态图形，还能够与页面交互逻辑结合。例如，统计页面可以根据时间范围切换不同数据源，并将汇总结果同步展示到饼状图和柱状图中；用户点击图形元素后，还可以触发对应的数据详情展示。这种“绘制+交互”的设计方式，更有利于体现项目的工程实现能力，也使系统在展示环节更具完整性。
 
+\section{系统总体方案确定}
 
+\subsection{架构设计思路}
+系统采用模块化设计思想，以主窗口作为统一容器，通过选项卡组织各业务页面。业务逻辑上，界面层负责输入输出与交互反馈，服务层负责数据读写和统计计算，会话层负责维护当前登录用户状态。该设计能够较好地降低模块耦合度，提高后续维护和扩展效率。
+从程序启动流程来看，系统首先创建QApplication对象并加载已保存的主题配置，然后进入登录窗口。登录成功后，系统创建主窗口，并将番茄钟、正向计时、数据统计、记账、日记等核心功能页面注册到标签页中。通过这种设计，项目实现了较为清晰的“入口窗口—主业务窗口—具体功能页面”层级结构，有利于控制页面职责边界并统一管理全局外观和用户状态。
 
-\section{表格}
-
-表应具有自明性。表中参数应标明量和单位的符号。
-为使表格简洁易读，均采用三线表（例如表~\ref{tab:three-line}）。
-必要时可加辅助线，三线表无法清晰表达时可采用其他格式。
-
-表序与表题置于表的上方。表单元格中的文字一般应居中书写（上下居中，左右居中），
-不宜左右居中书写的，可采取两端对齐的方式书写。
-
-\begin{table}
-  \centering
-  \caption{三线表示例}
-  \begin{tabular}{cc}
-    \toprule
-    文件名          & 描述                         \\
-    \midrule
-    thuthesis.dtx   & 模板的源文件，包括文档和注释 \\
-    thuthesis.cls   & 模板文件                     \\
-    thuthesis-*.bst & BibTeX 参考文献表样式文件    \\
-    \bottomrule
-  \end{tabular}
-  \label{tab:three-line}
-\end{table}
-
-若表中有附注，采用英文小写字母顺序编号，附注写在表的下方。
-推荐使用 \pkg{threeparttable} 宏包。
-
-\begin{table}
-  \centering
-  \begin{threeparttable}[c]
-    \caption{带附注的表格示例}
-    \label{tab:three-part-table}
-    \begin{tabular}{cc}
-      \toprule
-      文件名                 & 描述                         \\
-      \midrule
-      thuthesis.dtx\tnote{a} & 模板的源文件，包括文档和注释 \\
-      thuthesis.cls\tnote{b} & 模板文件                     \\
-      thuthesis-*.bst        & BibTeX 参考文献表样式文件    \\
-      \bottomrule
-    \end{tabular}
-    \begin{tablenotes}
-      \item [a] 可以通过 xelatex 编译生成模板的使用说明文档；
-        使用 xetex 编译 \file{thuthesis.ins} 时则会从 \file{.dtx} 中去除掉文档和注释，得到精简的 \file{.cls} 文件。
-      \item [b] 更新模板时，一定要记得编译生成 \file{.cls} 文件，否则编译论文时载入的依然是旧版的模板。
-    \end{tablenotes}
-  \end{threeparttable}
-\end{table}
-
-如某个表需要转页接排，可以“续表”的形式另页打印，格式同前，只需在每页表序前加“续”字即可。
-续表均应重复表头。
-推荐使用 \pkg{longtable} 宏包。
-
-\begin{longtable}{cccc}
-    \caption{跨页长表格的表题}
-    \label{tab:longtable} \\
-    \toprule
-    表头 1 & 表头 2 & 表头 3 & 表头 4 \\
-    \midrule
-  \endfirsthead
-    \caption*{续表~\thetable\quad 跨页长表格的表题} \\
-    \toprule
-    表头 1 & 表头 2 & 表头 3 & 表头 4 \\
-    \midrule
-  \endhead
-    \bottomrule
-  \endfoot
-  Row 1  & & & \\
-  Row 2  & & & \\
-  Row 3  & & & \\
-  Row 4  & & & \\
-  Row 5  & & & \\
-  Row 6  & & & \\
-  Row 7  & & & \\
-  Row 8  & & & \\
-  Row 9  & & & \\
-  Row 10 & & & \\
-\end{longtable}
-
-
-
-\section{算法}
-
-算法环境可以使用 \pkg{algorithms} 或者 \pkg{algorithm2e} 宏包。
-
-\renewcommand{\algorithmicrequire}{\textbf{输入：}\unskip}
-\renewcommand{\algorithmicensure}{\textbf{输出：}\unskip}
-
-\begin{algorithm}
-  \caption{Calculate $y = x^n$}
-  \label{alg1}
-  \small
-  \begin{algorithmic}
-    \REQUIRE $n \geq 0$
-    \ENSURE $y = x^n$
-
-    \STATE $y \leftarrow 1$
-    \STATE $X \leftarrow x$
-    \STATE $N \leftarrow n$
-
-    \WHILE{$N \neq 0$}
-      \IF{$N$ is even}
-        \STATE $X \leftarrow X \times X$
-        \STATE $N \leftarrow N / 2$
-      \ELSE[$N$ is odd]
-        \STATE $y \leftarrow y \times X$
-        \STATE $N \leftarrow N - 1$
-      \ENDIF
-    \ENDWHILE
-  \end{algorithmic}
-\end{algorithm}
+\subsection{模块划分方案}
+根据系统功能，本文将项目划分为登录会话模块、番茄计时模块、正向计时模块、日记模块、记账模块、数据统计模块、主题管理模块和扩展工具模块。其中，记账模块与统计模块是本次系统完善中的核心新增内容，它们直接提升了系统的综合应用价值与展示效果。
+各模块之间通过较为明确的接口进行协作。例如，会话模块为其他页面提供当前用户名；数据存储模块为业务页面提供持久化能力；统计模块在需要时主动读取存储层数据并形成汇总结果；主题管理模块则通过统一样式表影响整个应用的视觉表现。这种划分方式不仅提升了系统的可理解性，也有助于在论文中清晰描述各部分职责。

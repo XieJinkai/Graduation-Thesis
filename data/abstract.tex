@@ -3,22 +3,18 @@
 % 中英文摘要和关键字
 
 \begin{abstract}
-  此处填写中文摘要内容。摘要是论文内容的高度概括，应具有独立性和自含性，即不阅读论文全文，就能获得必要的信息。摘要应包括研究目的、研究方法、研究结果和结论等主要内容。
-
-  中文摘要一般不超过500字。
+  随着学习、工作节奏的不断加快，用户对时间管理、日常记录和个人财务管理的需求日益增长，但现有软件大多功能单一、平台割裂，难以同时满足专注计时、过程留痕和消费统计等综合需求。针对上述问题，本文结合当前已完成的项目，设计并实现了一套基于Qt框架的番茄计时与记账日记系统。系统采用C++作为开发语言，以Qt Widgets构建桌面图形界面，整体由登录会话、番茄计时、正向计时、日记记录、记账录入、数据统计、主题切换及扩展工具等模块组成。在数据管理方面，系统采用本地文件持久化策略：日记与专注记录以文本形式进行存储，记账数据采用JSON对象逐行写入的方式保存，从而兼顾实现成本、可读性与维护便利性。在功能实现方面，系统利用QTimer完成番茄计时与正向计时逻辑，利用QTableWidget完成账单展示与编辑，利用QMenu和QPropertyAnimation实现右键菜单及动画交互，利用自定义绘制的饼状图和柱状图对消费类型、周月专注时长及账单统计结果进行可视化表达。测试结果表明，该系统界面响应及时、功能运行稳定、数据读写正确，能够较好地满足个人用户在专注管理、日常记录与基础财务分析方面的实际需要。本文的研究与实现对于轻量级个人信息管理软件的开发具有一定的工程参考价值。
 
   % 关键词用"英文逗号"分隔，输出时会自动处理为正确的分隔符
   \thusetup{
-    keywords = {点云预测, 多目标检测与跟踪, 姿态预测, 轨迹预测},
+    keywords = {Qt, C++, 番茄工作法, 记账系统, 数据可视化},
   }
 \end{abstract}
 
 \begin{abstract*}
-  This is where the English abstract goes. The abstract should be a concise summary of the thesis, including the research purpose, methods, results, and conclusions.
-
-  The English abstract should generally not exceed 500 words.
+  With the acceleration of study and work rhythm, users increasingly need an integrated desktop application that can support focus management, diary recording, and personal accounting at the same time. However, most existing tools are functionally fragmented and usually focus on only one specific scenario. To address this problem, this paper designs and implements a Pomodoro timing, accounting, and diary system based on the Qt framework. The system is developed in C++ and built with Qt Widgets. It consists of multiple modules, including user session management, Pomodoro timer, stopwatch, diary recording, accounting input, statistical analysis, theme switching, and several auxiliary tools. In terms of data persistence, the system adopts a lightweight local storage strategy. Diary and focus records are stored in text files, while accounting records are serialized as JSON objects and saved line by line, which improves portability and simplifies maintenance. In terms of interaction design, QTimer is used to control timing tasks, QTableWidget is used to display and manage accounting records, QMenu together with QPropertyAnimation is used to support context menu interaction, and custom pie charts and bar charts are used to visualize focus duration and consumption distribution. Functional testing shows that the system is stable, responsive, and practical. It can effectively assist users in improving concentration efficiency, recording daily life, and managing personal expenses. The project provides a useful reference for the design and implementation of lightweight personal information management software.
 
   \thusetup{
-    keywords* = {Point cloud prediction, Multiple object detection and tracking, Pose prediction, Trajectory prediction},
+    keywords* = {Qt, C++, Pomodoro Technique, Accounting System, Data Visualization},
   }
 \end{abstract*}
